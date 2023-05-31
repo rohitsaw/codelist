@@ -39,14 +39,14 @@ class Contest extends HiveObject {
   int logoId;
 
   Contest({
-    this.id,
-    this.duration,
-    this.description,
-    this.title,
-    this.link,
-    this.logoId,
-    this.startDate,
-    this.endDate,
+    required this.id,
+    required this.duration,
+    required this.description,
+    required this.title,
+    required this.link,
+    required this.logoId,
+    required this.startDate,
+    required this.endDate,
   });
 
   factory Contest.fromJSON(Map<dynamic, dynamic> json) {

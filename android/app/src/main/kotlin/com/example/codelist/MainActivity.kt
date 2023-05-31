@@ -1,4 +1,4 @@
-package com.example.codelist
+package developer.rohitsaw.codelist
 
 import io.flutter.embedding.android.FlutterActivity
 

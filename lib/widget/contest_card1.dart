@@ -1,11 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../model/contest.dart';
 
@@ -102,7 +101,7 @@ class ContestCard1 extends StatelessWidget {
                     // contains start and end time
                     ValueListenableBuilder(
                       valueListenable: settingBox.listenable(keys: ["isIST"]),
-                      builder: (ctx, box, widget) => Padding(
+                      builder: (ctx, Box box, widget) => Padding(
                         padding: const EdgeInsets.only(top: 2.5, bottom: 2.5),
                         child: Row(
                           children: [
@@ -165,7 +164,8 @@ class ContestCard1 extends StatelessWidget {
 }
 
 Future<dynamic> _showOptions(context, gpos, contest) {
-  final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+  final RenderBox overlay =
+      Overlay.of(context).context.findRenderObject() as RenderBox;
   return showMenu(
       elevation: 10,
       context: context,
@@ -179,7 +179,7 @@ List<PopupMenuItem> _getMenuItems(contest) {
     PopupMenuItem(
       value: 0,
       child: GestureDetector(
-        onTapUp: (details) => launch(contest.link),
+        onTapUp: (details) => launchUrlString(contest.link),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,

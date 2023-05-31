@@ -42,3 +42,7 @@ app.*.map.json
 
 # api credientials
 credientials.dart
+
+#key related
+key.jks
+key.properties

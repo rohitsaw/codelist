@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 import '../model/contest.dart';
-import 'credientials.dart';
+import 'credentials.dart';
 
 Future<void> fetchContests(Box<Contest> contestBox, Box settingBox) async {
   String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -17,8 +17,8 @@ Future<void> fetchContests(Box<Contest> contestBox, Box settingBox) async {
   var url =
       'https://clist.by/api/v1/contest/?username=$username&api_key=$key&end__gte=$date&order_by=end';
 
-  final response = await http.get(url);
-  print("response ready");
+  final response = await http.get(Uri.parse(url));
+  print("Contest response is ${response}");
 
   if (response.statusCode == 200) {
     await contestBox.clear();
@@ -34,7 +34,7 @@ Future<void> fetchContests(Box<Contest> contestBox, Box settingBox) async {
     print("list ready ${tmpList.length}");
 
     await contestBox.addAll(tmpList);
-    print("first contest date is ${contestBox.getAt(0).endDate.toString()}");
+    print("first contest date is ${contestBox.getAt(0)?.endDate.toString()}");
     print("new contest loaded");
   } else {
     throw Exception('Failed to load contests');
@@ -44,7 +44,11 @@ Future<void> fetchContests(Box<Contest> contestBox, Box settingBox) async {
 Future<void> fetchIcons(Box settingBox) async {
   final url =
       "https://clist.by:443/api/v1/resource/?username=$username&api_key=$key";
-  final response = await http.get(url);
+
+  print("icon url is ${url}");
+  final response = await http.get(Uri.parse(url));
+
+  print("Icon response is ${response}");
 
   if (response.statusCode == 200) {
     await settingBox.clear();
@@ -64,16 +68,13 @@ Future<void> fetchIcons(Box settingBox) async {
     await settingBox.put("allPlatform", allPlatform);
     await settingBox.put("selectedPlatform", selectedPlatform);
 
-
-
     tmp.forEach((val) async {
       var logoUrl = "http://clist.by/${val['icon']}";
-      var response = await http.get(logoUrl);
+      var response = await http.get(Uri.parse(logoUrl));
       File file = File(join(appDocPath, '${val['id']}'));
       file.writeAsBytesSync(response.bodyBytes);
       settingBox.put(val["id"], file.path);
     });
-
   } else {
     throw Exception('Failed to load icons');
   }
