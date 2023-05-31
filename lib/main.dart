@@ -68,17 +68,19 @@ class MyApp extends StatelessWidget {
       print("contest box length is ${contestBox.length}");
       print("settingBox length is ${settingBox.length}");
 
-      await fetchIcons(settingBox);
       await fetchContests(contestBox, settingBox);
+      print("Fetching contests success");
 
-      print("Fetching success");
+      await fetchIcons(settingBox);
+      print("Fetching Icons success");
+
       return MyHomePage(
         title: 'Available Events',
         contestBox: contestBox,
         settingBox: settingBox,
       );
     } else {
-      print("direct loading");
+      print("Loading from FileStored");
       return MyHomePage(
         title: 'Available Events',
         contestBox: contestBox,
@@ -116,12 +118,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Future<void> refresh() async {
+    await fetchContests(widget.contestBox, widget.settingBox);
+    print("contests info fetched");
+    await fetchIcons(widget.settingBox);
+    print("icons info fetched");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(widget, context),
       body: RefreshIndicator(
-        onRefresh: () => fetchContests(widget.contestBox, widget.settingBox),
+        onRefresh: () => refresh(),
         child: ValueListenableBuilder(
           valueListenable:
               widget.settingBox.listenable(keys: ['selectedPlatform']),
@@ -155,17 +164,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               }
 
-              return Container(
-                child: ListView.separated(
-                  itemBuilder: (context, index) {
-                    return ContestCard1(tmpList[index]);
-                  },
-                  itemCount: tmpList.length,
-                  separatorBuilder: (ctx, index) => Divider(
-                    thickness: 1,
-                  ),
-                ),
-              );
+              return Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Container(
+                    child: ListView.separated(
+                      itemBuilder: (context, index) {
+                        return ContestCard1(tmpList[index]);
+                      },
+                      itemCount: tmpList.length,
+                      separatorBuilder: (ctx, index) => Divider(
+                        thickness: 1,
+                      ),
+                    ),
+                  ));
             },
           ),
         ),

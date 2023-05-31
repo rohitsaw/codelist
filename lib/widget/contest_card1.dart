@@ -17,8 +17,7 @@ class ContestCard1 extends StatelessWidget {
     // storing tap position
     Offset gpos = Offset.zero;
 
-    final settingBox = Hive.box('settingBox');
-    // bool isIST = settingBox.get('isIST', defaultValue: true);
+    final Box settingBox = Hive.box('settingBox');
 
     return Stack(
       children: [
@@ -81,16 +80,24 @@ class ContestCard1 extends StatelessWidget {
                             alignment: Alignment.topCenter,
                             child: CircleAvatar(
                               radius: 30,
-                              child: ClipOval(
-                                child: (settingBox.get(contest.logoId) != null)
-                                    ? Image.file(
-                                        File(settingBox.get(contest.logoId)),
-                                        fit: BoxFit.contain,
-                                        width: 65,
-                                      )
-                                    : Icon(
-                                        Icons.hourglass_empty_rounded,
-                                      ),
+                              child: ValueListenableBuilder(
+                                valueListenable:
+                                    Hive.box('settingBox').listenable(),
+                                builder: (context, Box settingBox, widget) {
+                                  return ClipOval(
+                                    child: (settingBox.get(contest.logoId) !=
+                                            null)
+                                        ? Image.file(
+                                            File(
+                                                settingBox.get(contest.logoId)),
+                                            fit: BoxFit.contain,
+                                            width: 65,
+                                          )
+                                        : Icon(
+                                            Icons.hourglass_empty_rounded,
+                                          ),
+                                  );
+                                },
                               ),
                             ),
                           ),

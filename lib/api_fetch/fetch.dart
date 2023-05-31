@@ -48,33 +48,36 @@ Future<void> fetchIcons(Box settingBox) async {
   print("icon url is ${url}");
   final response = await http.get(Uri.parse(url));
 
-  print("Icon response is ${response}");
+  print("Icon response is ${jsonDecode(response.body)["objects"]}");
 
   if (response.statusCode == 200) {
     await settingBox.clear();
 
-    settingBox.put('isIST', true);
+    await settingBox.put('isIST', true);
     var tmp = jsonDecode(response.body)['objects'];
 
-    Directory appDocDir = await getApplicationDocumentsDirectory();
+    Directory appDocDir = await getTemporaryDirectory();
     String appDocPath = appDocDir.path;
 
     List<String> allPlatform = [];
     List<String> selectedPlatform = [];
 
-    tmp.forEach((val) {
+    for (var val in tmp) {
       allPlatform.add(val['name']);
-    });
+    }
     await settingBox.put("allPlatform", allPlatform);
     await settingBox.put("selectedPlatform", selectedPlatform);
 
-    tmp.forEach((val) async {
+    for (var val in tmp) {
       var logoUrl = "http://clist.by/${val['icon']}";
       var response = await http.get(Uri.parse(logoUrl));
       File file = File(join(appDocPath, '${val['id']}'));
       file.writeAsBytesSync(response.bodyBytes);
-      settingBox.put(val["id"], file.path);
-    });
+      await settingBox.put(val["id"], file.path);
+      print("icon stored in = ${file.path}");
+      print(settingBox.get(val["id"]));
+      print("-----------------------");
+    }
   } else {
     throw Exception('Failed to load icons');
   }
